@@ -1,0 +1,130 @@
+﻿@model IEnumerable<CafeApps.Web.Models.Cart>
+
+@{
+    ViewBag.Title = "ViewCart";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<h2>View Cart</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FoodName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TotalAmount)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FoodName)
+            </td>
+            <td>
+                <button class="deductBtn" data-id=@item.CartId><p>-</p></button>
+                @Html.DisplayFor(modelItem => item.Quantity)
+                <button class="addBtn" data-id=@item.CartId><p>+</p></button>
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalAmount)
+            </td>
+            <td>
+                <div class="deleteBtn" data-id=@item.CartId>@Html.ActionLink("Delete", "ViewCart")</div>
+            </td>
+        </tr>
+    }
+    <tr>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+            @Model.Sum(i => i.TotalAmount)
+        </td>
+        <td>
+            @Html.ActionLink("Confirm Order", "ConfirmOrder")
+        </td>
+    </tr>
+</table>
+<div id="message">
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".addBtn").click(function () {
+            debugger
+            var dataId = $(this).attr("data-id");
+            $.ajax({
+                type: "POST",
+                url: "/Customer/AddQuantity",
+                data: { Id: dataId },
+                success: function (response) {
+                    if (response.CartMessage) {
+                        document.getElementById('message').innerHTML = response.Msg;
+                        location.reload();
+                    } else {
+                        document.getElementById('message').innerHTML = response.Msg;
+                        location.reload();
+                    }
+                }
+            })
+        })
+    })
+
+    $(document).ready(function () {
+        $(".deductBtn").click(function () {
+            var dataId = $(this).attr("data-id");
+            $.ajax({
+                type: "POST",
+                url: "/Customer/DeductQuantity",
+                data: { Id: dataId },
+                success: function (response) {
+                    if (response.CartMessage) {
+                        location.reload();
+                        document.getElementById('message').innerHTML = response.Msg;
+                    } else {
+                        location.reload();
+                        document.getElementById('message').innerHTML = response.Msg;
+                    }
+                }
+            })
+        })
+    })
+
+    $(document).ready(function () {
+        $(".deleteBtn").click(function () {
+            debugger
+            var dataId = $(this).attr("data-id");
+            $.ajax({
+                type: "POST",
+                url: "/Customer/DeleteFood",
+                data: { Id: dataId },
+                success: function (response) {
+                    if (response.CartMessage) {
+                        document.getElementById('message').innerHTML = response.Msg;
+                    } else {
+                        document.getElementById('message').innerHTML = response.Msg;
+                    }
+                }
+            })
+        })
+    })
+
+</script>

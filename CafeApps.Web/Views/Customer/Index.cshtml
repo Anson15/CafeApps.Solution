@@ -1,0 +1,78 @@
+﻿@model IEnumerable<CafeApps.Web.Models.Menu>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+<style>
+    #List{
+        font-size:25px;
+        list-style-type:none;
+    }
+
+    #food {
+        text-align: center;
+        border-radius: 20px;
+        display: block;
+        border: 2px solid black;
+        background: linear-gradient(to bottom, #33ccff 0%, #ff99cc 100%);
+        width: 50%;
+        padding: 70px;
+        float: left;
+        overflow: hidden;
+    }
+</style>
+<div>
+    <div>
+
+        @foreach (var item in Model)
+        {<div id="food">
+                <ul id="List">
+                    <li>
+                        @Html.DisplayFor(modelItem => item.Category)
+                    </li>
+                    <li>
+                        @Html.DisplayFor(modelItem => item.FoodName)
+                    </li>
+                    <li>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </li>
+                    <li>
+                        @if (!string.IsNullOrWhiteSpace(item.Image))
+                        {
+                            <img src="@Url.Content(item.Image)" width="250" height="250" />
+                        }
+                    </li>
+                    <li>
+                        <div class="button" data-id=@item.MenuId>@Html.ActionLink("Add To Cart", "Index")</div>
+                    </li>
+                </ul>
+            </div>
+        }
+
+    </div>
+</div>
+<div id="message">
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".button").click(function () {
+            var dataId = $(this).attr("data-id");
+            $.ajax({
+                type: "POST",
+                url: "/Customer/AddMenuToCart",
+                data: { Id: dataId },
+                success: function (response) {
+                    if (response.CartMessage) {
+                        document.getElementById('message').innerHTML = response.Msg;
+                    } else {
+                        document.getElementById('message').innerHTML = response.Msg;
+                    }
+                }
+            })
+        })
+    })
+</script>
+
